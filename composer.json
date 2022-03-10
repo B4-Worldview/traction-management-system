@@ -1,0 +1,32 @@
+{
+  "name": "b4-worldview/traction-management-system",
+  "description": "A Custom CraftCMS Plugin for the Traction App",
+  "type": "craft-plugin",
+  "version": "0.0.1",
+  "keywords": ["CraftCMS", "Traction App"],
+  "authors": [
+    {
+      "name": "Nate Bate",
+      "homepage": "https://nathanbate.com"
+    }
+  ],
+  "require": {
+    "craftcms/cms": "^3.1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "b4worldview\\tractionms\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Traction Management System",
+    "handle": "tractionms",
+    "class" : "b4worldview\\tractionms\\TractionMS"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}
