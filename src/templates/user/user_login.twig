@@ -1,10 +1,17 @@
 
+{% extends "tractionms/_layouts/frontend.twig" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
 {#
 This is from https://craftcms.com/knowledge-base/front-end-user-accounts#registration-form
 #}
 <form method="post" accept-charset="UTF-8">
     {{ csrfInput() }}
     {{ actionInput('users/login') }}
+    {{ redirectInput('tractionms/user/profile') }}
 
     <label for="loginName">Username or email</label>
     {{ input('text', 'loginName', craft.app.user.rememberedUsername, {
@@ -30,3 +37,6 @@ This is from https://craftcms.com/knowledge-base/front-end-user-accounts#registr
 </form>
 
 <p><a href="{{ url('reset-password') }}">Forgot your password?</a></p>
+
+{% endblock %}
+

@@ -55,7 +55,13 @@ class TractionMS extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules["tractionms/register"] = 'tractionms/user/register';
+                $event->rules["tractionms/user/register"] = ['template' => 'tractionms/user/user_registration.twig'];
+                $event->rules["tractionms/user/register-success"] = ['template' => 'tractionms/user/user_registration_successful.twig'];
+                $event->rules["tractionms/user/login"] = ['template' => 'tractionms/user/user_login.twig'];
+                $event->rules["tractionms/user/profile"] = 'tractionms/user/profile';
+                $event->rules["tractionms/user/profile/<status:\w+>"] = 'tractionms/user/profile';
+                $event->rules["tractionms/user/change-email"] = ['template' => 'tractionms/user/user_change_email.twig'];
+                $event->rules["tractionms/user/change-email-message"] = ['template' => 'tractionms/user/user_change_email_message.twig'];
             }
         );
 
@@ -63,7 +69,7 @@ class TractionMS extends Plugin
             View::class,
             View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
             function(RegisterTemplateRootsEvent $event) {
-                $event->roots['tractionms_fe'] = __DIR__ . '/templates';
+                $event->roots['tractionms'] = __DIR__ . '/templates';
             }
         );
 

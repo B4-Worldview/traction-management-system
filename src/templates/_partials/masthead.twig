@@ -1,0 +1,10 @@
+<div>
+    {% if currentUser %}
+        <a href="{{ siteUrl }}tractionms/user/profile">Profile</a>&nbsp;&nbsp;
+        <a href="{{ siteUrl }}logout">Logout</a>
+    {% else %}
+        <a href="{{ siteUrl }}tractionms/user/register">Register</a>&nbsp;&nbsp;
+        <a href="{{ siteUrl }}tractionms/user/login">Login</a>
+    {% endif %}
+</div>
+<br><br>

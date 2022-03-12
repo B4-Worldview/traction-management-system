@@ -2,6 +2,15 @@
 This is from https://craftcms.com/knowledge-base/front-end-user-accounts#registration-form
 #}
 
+{% extends "tractionms/_layouts/frontend.twig" %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block content %}
+After filling out the registration form, check your email (sometimes confirmation emails go to
+your spam/junk folder). Click the link in the email to activate your account.
+<br><br>
+
 {% macro errorList(errors) %}
     {% if errors %}
         {{ ul(errors, {class: 'errors'}) }}
@@ -14,14 +23,7 @@ This is from https://craftcms.com/knowledge-base/front-end-user-accounts#registr
 <form method="post" accept-charset="UTF-8">
     {{ csrfInput() }}
     {{ actionInput('users/save-user') }}
-    {{ redirectInput('') }}
-
-    <label for="username">Username</label>
-    {{ input('text', 'username', user.username ?? null, {
-        id: 'username',
-        autocomplete: 'username',
-    }) }}
-    {{ user ? _self.errorList(user.getErrors('username')) }}
+    {{ redirectInput('tractionms/user/register-success') }}
 
     <label for="firstName">First Name</label>
     {{ input('text', 'firstName', user.firstName ?? null, {
@@ -52,3 +54,5 @@ This is from https://craftcms.com/knowledge-base/front-end-user-accounts#registr
 
     <button type="submit">Register</button>
 </form>
+
+{% endblock %}

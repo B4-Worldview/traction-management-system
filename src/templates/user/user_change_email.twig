@@ -1,0 +1,55 @@
+{% extends "tractionms/_layouts/frontend.twig" %}
+
+{% block title %}Change Email Address{% endblock %}
+
+{% block content %}
+
+{# Require that a user is logged in to view this form. #}
+{% requireLogin %}
+
+{% macro errorList(errors) %}
+    {% if errors %}
+        {{ ul(errors, {class: 'errors'}) }}
+    {% endif %}
+{% endmacro %}
+
+{# If there were any validation errors, a `user` variable will be passed to the
+   template, which contains the posted values and validation errors. If that’s not
+   set, we’ll default to the current user. #}
+{% set user = user ?? currentUser %}
+
+{% if user.hasErrors() %}
+    <p>Unable to save your profile.</p>
+{% endif %}
+
+<form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
+    {{ csrfInput() }}
+    {{ actionInput('users/save-user') }}
+    {{ hiddenInput('userId', user.id) }}
+    {{ redirectInput('tractionms/user/change-email-message') }}
+
+    <label for="email">Email</label>
+    {{ input('text', 'email', user.unverifiedEmail ?? user.email, {
+        id: 'email',
+        class: user.hasErrors('email') ? 'error',
+        autocomplete: 'email',
+    }) }}
+    {{ _self.errorList(user.getErrors('username')) }}
+
+    {% if craft.app.projectConfig.get('users.requireEmailVerification') %}
+        <p>New email addresses need to be verified.</p>
+    {% endif %}
+
+    <label for="current-password">Current Password</label>
+    {{ input('password', 'password', null, {
+        id: 'current-password',
+        class: user.hasErrors('currentPassword') ? 'error',
+        autocomplete: 'current-password',
+    }) }}
+    {{ _self.errorList(user.getErrors('currentPassword')) }}
+
+
+    <button type="submit">Save Email</button>
+</form>
+
+{% endblock %}

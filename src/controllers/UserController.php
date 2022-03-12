@@ -14,15 +14,17 @@ class UserController extends controller {
 
     protected $allowAnonymous = true;
 
-    public function actionRegister()
-    {
-        $variables = [];
+    public function actionProfile($status="") {
+
+        $variables = [
+            "status" => $status
+        ];
+
         return $this->renderTemplate(
-            'tractionms_fe/user/user_registration.twig',
+            'tractionms/user/user_profile.twig',
             $variables,
             View::TEMPLATE_MODE_SITE
         );
-    } // public function actionRegister
-
+    }
 
 }

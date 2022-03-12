@@ -1,3 +1,9 @@
+{% extends "tractionms/_layouts/frontend.twig" %}
+
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+
 {#
     This is from https://craftcms.com/knowledge-base/front-end-user-accounts#registration-form
 #}
@@ -20,11 +26,17 @@
     <p>Unable to save your profile.</p>
 {% endif %}
 
+{% if status == "uus" %}
+<br><br>
+    Profile updated successfully.
+<br><br>
+{% endif %}
+
 <form method="post" accept-charset="UTF-8" enctype="multipart/form-data">
     {{ csrfInput() }}
     {{ actionInput('users/save-user') }}
     {{ hiddenInput('userId', user.id) }}
-    {{ redirectInput("users/#{currentUser.username}") }}
+    {{ redirectInput('tractionms/user/profile/uus') }}
 
     <label for="first-name">First Name</label>
     {{ input('text', 'firstName', user.firstName, {
@@ -73,17 +85,12 @@
         {{ _self.errorList(user.getErrors('username')) }}
     {% endif %}
 
-    <label for="email">Email</label>
-    {{ input('text', 'email', user.unverifiedEmail ?? user.email, {
-        id: 'email',
-        class: user.hasErrors('email') ? 'error',
-        autocomplete: 'email',
-    }) }}
-    {{ _self.errorList(user.getErrors('username')) }}
-
-    {% if craft.app.projectConfig.get('users.requireEmailVerification') %}
-        <p>New email addresses need to be verified.</p>
-    {% endif %}
+    <br><br>
+   <div>
+       {{ user.email }}
+       <a href="{{ siteUrl }}tractionms/user/change-email">Change Email Address</a>
+   </div>
+    <br><br>
 
     <label for="new-password">New Password</label>
     {{ input('password', 'newPassword', null, {
@@ -101,15 +108,9 @@
     }) }}
     {{ _self.errorList(user.getErrors('currentPassword')) }}
 
-    {# Custom “Bio” field #}
-    <label for="bio">Bio</label>
-    {{ tag('textarea', {
-        text: user.bio,
-        id: 'bio',
-        name: 'fields[bio]',
-        class: user.hasErrors('bio') ? 'error',
-    }) }}
-    {{ _self.errorList(user.getErrors('bio')) }}
 
     <button type="submit">Save Profile</button>
 </form>
+
+{% endblock %}
+
