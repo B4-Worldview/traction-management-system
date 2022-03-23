@@ -1,0 +1,68 @@
+<style>
+    .message {
+        margin-top:30px;
+        margin-bottom: 30px;
+        color: red;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    input, textarea {
+        margin-bottom: 20px;
+    }
+
+    form {
+        max-width: 400px;
+    }
+</style>
+
+<h3>Test Page for Sharing the Traction App</h3>
+
+{% if success is defined %}
+    {% if success == true %}
+        <div class="message">
+            Email Sent Successfully
+        </div>
+    {% else %}
+        There was a problem sending the email.<br>
+    {% endif %}
+{% endif %}
+
+{% macro errorList(errors) %}
+    {% if errors %}
+        {{ ul(errors, {class: 'errors'}) }}
+    {% endif %}
+{% endmacro %}
+
+<form method="post" accept-charset="UTF-8" style="display: flex; flex-direction: column;">
+    {{ csrfInput() }}
+    {{ actionInput('tractionms/share/by-email') }}
+
+    <label for="name">Your Name</label>
+    {{ input('text', 'name', '', {
+        id: 'name',
+    }) }}
+    {{ errors ? _self.errorList(submission.getErrors('name')) }}
+
+    <label for="email">Their Email</label>
+    {{ input('email', 'email', '', {
+        id: 'email',
+    }) }}
+    {{ errors ? _self.errorList(submission.getErrors('email')) }}
+
+    <label for="message">Message</label>
+    {{ tag('textarea', {
+        text:  '',
+        id: 'message',
+        name: 'message',
+        rows: 10,
+        cols: 40,
+    }) }}
+    {{ errors ? _self.errorList(submission.getErrors('message')) }}
+
+    <button type="submit">Send</button>
+</form>
+
+
