@@ -12,6 +12,12 @@ use b4worldview\tractionms\models\ShareEmailModel;
 class ShareController extends Controller
 {
 
+    /**
+     * @inheritdoc
+     */
+    public $allowAnonymous = true;
+
+
     public function actionIndex():Response
     {
         $variables = [];
@@ -49,6 +55,11 @@ class ShareController extends Controller
         }
 
         $variables["success"] = $success;
+
+        if ($request->getAcceptsJson()) {
+            return $this->asJson($variables);
+        }
+
         return $this->renderTemplate(
             'tractionms/share/email.twig',
             $variables,
