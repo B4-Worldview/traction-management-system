@@ -64,6 +64,7 @@ class TractionMS extends Plugin
                 $event->rules["tractionms/user/change-email-message"] = ['template' => 'tractionms/user/user_change_email_message.twig'];
                 $event->rules["tractionms/share/"] = 'tractionms/share/index';
                 $event->rules["tractionms/share/by-email"] = 'tractionms/share/by-email';
+                $event->rules["tractionms/share/review"] = 'tractionms/share/review';
             }
         );
 
