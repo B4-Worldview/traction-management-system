@@ -2,13 +2,15 @@
 
 namespace b4worldview\tractionms\controllers;
 
-use Craft;
-use craft\web\Controller;
-use yii\web\BadRequestHttpException;
-use yii\web\Response;
-use craft\web\View;
+use b4worldview\tractionms\models\SettingsModel;
 use b4worldview\tractionms\models\ShareEmailModel;
 use b4worldview\tractionms\models\ShareReviewModel;
+use b4worldview\tractionms\TractionMS;
+use Craft;
+use craft\web\Controller;
+use craft\web\View;
+use yii\web\BadRequestHttpException;
+use yii\web\Response;
 
 class ShareController extends Controller
 {
@@ -19,7 +21,7 @@ class ShareController extends Controller
     public $allowAnonymous = true;
 
 
-    public function actionIndex():Response
+    public function actionIndex(): Response
     {
         $variables = [];
         $variables['errors'] = false;
@@ -42,6 +44,9 @@ class ShareController extends Controller
         $this->requirePostRequest();
         $request = Craft::$app->getRequest();
 
+        /** @var SettingsModel $settings */
+        $settings = TractionMS::getInstance()->getSettings();
+
         $review = new ShareReviewModel();
         $review->overall = $request->getBodyParam("overall");
         $review->favTrophy = $request->getBodyParam("favTrophy");
@@ -50,8 +55,25 @@ class ShareController extends Controller
 
         if ($review->validate()) {
             $review->save();
-            $success = $this->sendEmail(null, $review);
+
+            $html = "
+                <b>Overall Experience</b><br>
+                {$review->overall}<br><br>
+                
+                <b>Favorite Trophy(s)</b><br>
+                {$review->favTrophy}<br><br>
+                
+                <b>Suggestions for Improvement</b><br>
+                {$review->suggestions}
+            ";
+            $success = TractionMS::getInstance()->sendEmail(
+                $settings->leaveReviewEmail,
+                "You have received a review of the Traction App",
+                $html
+            );
+
             $variables["success"] = $success;
+            $variables['errors'] = false;
 
         } else {
             $variables["success"] = false;
@@ -79,13 +101,20 @@ class ShareController extends Controller
         $submission->message = $request->getBodyParam("message");
 
         if ($submission->validate()) {
-
             $body = "
-                {$submission->name} wanted to share the Traction Adventure App with you, and they shared the following
+                {$submission->name} wanted to share the 
+                <a href='https://traction.discipleshiptraining.org'>
+                    Traction Adventure App 
+                </a>
+                (https://traction.discipleshiptraining.org) with you, and they shared the following
                 message with you:<br><br>
                 {$submission->message}
             ";
-            //$success = $this->se
+            $success = TractionMS::getInstance()->sendEmail(
+                $submission->email,
+                "Checkout the Traction Adventure App!",
+                $body
+            );
             $variables['errors'] = false;
         } else {
             $variables['submission'] = $submission;
@@ -103,52 +132,5 @@ class ShareController extends Controller
             $variables,
             View::TEMPLATE_MODE_SITE
         );
-
-    }
-
-
-    private function sendEssmail(ShareEmailModel $submission = null, ShareReviewModel $review = null): bool
-    {
-
-        if ($submission != null) {
-            $html = "
-        {$submission->name} wanted to share the Traction Adventure App with you, and they shared the following
-        message with you:<br><br>
-        {$submission->message}
-        ";
-
-            return Craft::$app
-                ->getMailer()
-                ->compose()
-                ->setTo($submission->email)
-                ->setSubject("Checkout the Traction Adventure App!")
-                ->setHtmlBody($html)
-                ->send();
-        }
-
-        if ($review != null) {
-
-            $html = "
-            <b>Overall Experience</b><br>
-            {$review->overall}<br><br>
-            
-            <b>Favorite Trophy(s)</b><br>
-            {$review->favTrophy}<br><br>
-            
-            <b>Suggestions for Improvement</b><br>
-            {$review->suggestions}
-            ";
-
-            return Craft::$app
-                ->getMailer()
-                ->compose()
-                ->setTo("NathanBate81@gmail.com")
-                ->setSubject("You have received a review of the Traction App")
-                ->setHtmlBody($html)
-                ->send();
-
-        }
-    }
-
-
-}
+    } // actionByEmail
+} // class

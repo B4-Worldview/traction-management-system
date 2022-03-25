@@ -2,6 +2,7 @@
 
 namespace b4worldview\tractionms\controllers;
 
+use b4worldview\tractionms\TractionMS;
 use Craft;
 use craft\base\Plugin;
 use craft\errors\MissingComponentException;
@@ -35,6 +36,7 @@ class DemoController extends Controller
         // how to get the currently logged-in user
         $user = Craft::$app->getUser()->getIdentity();
 
+        /*
         $mailer = Craft::$app->getMailer();
 
         $message = $mailer->compose()
@@ -43,6 +45,13 @@ class DemoController extends Controller
             ->setHtmlBody("Text Field: " . $textField);
 
         $success = $message->send();
+        */
+
+        $success = TractionMS::getInstance()->sendEmail(
+            $user->email,
+            "Test Email from TractionMS Demo Tab",
+            "Text Field: {$textField}"
+        );
 
         if ($success) {
             Craft::$app->getSession()->setNotice("Success!");
