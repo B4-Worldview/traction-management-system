@@ -2,8 +2,11 @@
   "name": "b4-worldview/traction-management-system",
   "description": "A Custom CraftCMS Plugin for the Traction App",
   "type": "craft-plugin",
-  "version": "0.0.2",
-  "keywords": ["CraftCMS", "Traction App"],
+  "version": "0.0.4",
+  "keywords": [
+    "CraftCMS",
+    "Traction App"
+  ],
   "authors": [
     {
       "name": "Nate Bate",
@@ -21,7 +24,7 @@
   "extra": {
     "name": "Traction MS",
     "handle": "tractionms",
-    "class" : "b4worldview\\tractionms\\TractionMS"
+    "class": "b4worldview\\tractionms\\TractionMS"
   },
   "config": {
     "allow-plugins": {
