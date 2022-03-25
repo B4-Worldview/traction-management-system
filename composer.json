@@ -19,7 +19,7 @@
     }
   },
   "extra": {
-    "name": "Traction Management System",
+    "name": "Traction MS",
     "handle": "tractionms",
     "class" : "b4worldview\\tractionms\\TractionMS"
   },

@@ -1,0 +1,97 @@
+{% extends '_layouts/cp' %}
+{% import '_includes/forms' as forms %}
+{% set settings = craft.app.plugins.getPlugin('tractionms').settings %}
+
+{% set tabs = {
+    general: { label: 'General', url: '#general' },
+    notifications: { label: 'Notifications', url: '#tractionMsNotifications' },
+    demo: { label: 'Demo', url: '#demoTab' }
+} %}
+
+{% set title = "Traction MS" %}
+
+{% block content %}
+
+    <div id="general">
+        General Settings
+    </div>
+
+    <div id="tractionMsNotifications" class="hidden">
+        <div>
+            <h1>Contact Us Email</h1>
+            {{ settings.contactUsEmail }}
+        </div>
+        <div>
+            <h1>Leave a Review Email</h1>
+            {{ settings.leaveReviewEmail }}
+        </div>
+    </div>
+
+    <div id="demoTab" class="hidden">
+
+        <form method="post" action="">
+            {{ csrfInput() }}
+
+            {{ forms.hidden({
+                name: 'action',
+                value: 'tractionms/demo'
+            }) }}
+
+            {{ forms.textField({
+                label: 'Text Field',
+                name: 'textFieldDemo',
+                value: 'lorem ipsem',
+                instructions: 'Demo Text Field',
+                first: true,
+                required: true
+
+            }) }}
+
+            {{ forms.textareaField({
+                label: 'Textarea Field',
+                name: 'textarea',
+                value: 'lorem ipsem',
+                instructions: 'Demo Textarea Field',
+                rows: 10,
+                cols: 20
+            }) }}
+
+            {{ forms.dateField({
+                label: 'Date Field',
+                name: 'date',
+                value: '',
+                instructions: 'Demo Date Picker'
+            }) }}
+
+            {{ forms.colorField({
+                label: 'Color Field',
+                name: 'color',
+                value: '',
+                instructions: 'Demo Color Picker'
+            }) }}
+
+            {{ forms.selectField({
+                label: 'Select Field',
+                name: 'select',
+                value: 'b',
+                options: {
+                    a: 'A',
+                    b: 'B',
+                    c: 'C'
+                },
+                instructions: 'Demo Select Field'
+            }) }}
+
+            <input type="submit" class="submit btn" value="Test Submit"/>
+
+        </form>
+
+        <div style="margin-top:40px;">
+            <h1>Demo Lightswitch Value</h1>
+            {{ settings.demoLightSwitch }}
+        </div>
+
+    </div>
+
+
+{% endblock %}

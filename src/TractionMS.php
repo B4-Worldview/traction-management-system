@@ -1,15 +1,19 @@
 <?php
+
 namespace b4worldview\tractionms;
 
+use b4worldview\tractionms\models\SettingsModel;
 use Craft;
+use craft\base\Plugin;
+use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\web\UrlManager;
-
-use craft\events\RegisterTemplateRootsEvent;
 use craft\web\View;
-
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use yii\base\Event;
-use craft\base\Plugin;
+use yii\base\Exception;
 
 /**
  * Custom module class.
@@ -31,15 +35,26 @@ use craft\base\Plugin;
 class TractionMS extends Plugin
 {
 
-
     public static $plugin;
+
+
+    /**
+     * @var bool
+     */
+    public $hasCpSection = true;
+
+
+    /**
+     * @var bool
+     */
+    public $hasCpSettings = true;
+
 
     /**
      * Initializes the module.
      */
     public function init()
     {
-
         parent::init();
 
         // Set the controllerNamespace based on whether this is a console or web request
@@ -71,10 +86,48 @@ class TractionMS extends Plugin
         Event::on(
             View::class,
             View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
-            function(RegisterTemplateRootsEvent $event) {
+            function (RegisterTemplateRootsEvent $event) {
                 $event->roots['tractionms'] = __DIR__ . '/templates';
             }
         );
+    } // init
 
+    /**
+     * @param $to
+     * @param $subject
+     * @param $body
+     * @return bool
+     */
+    public function sendEmail($to, $subject, $body): bool
+    {
+        return Craft::$app
+            ->getMailer()
+            ->compose()
+            ->setTo($to)
+            ->setSubject($subject)
+            ->setHtmlBody($body)
+            ->send();
+    }
+
+    /**
+     * @return SettingsModel
+     */
+    protected function createSettingsModel(): SettingsModel
+    {
+        return new SettingsModel();
+    }
+
+    /**
+     * @return string|null
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws Exception
+     */
+    protected function settingsHtml(): string
+    {
+        return Craft::$app->getView()->renderTemplate('tractionms/_cp/settings', [
+            'settings' => $this->getSettings()
+        ]);
     }
 }

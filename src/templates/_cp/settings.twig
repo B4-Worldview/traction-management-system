@@ -1,0 +1,29 @@
+{% import '_includes/forms' as forms %}
+
+    {{ forms.textField({
+        label: 'Contact Us Email',
+        instructions: 'Which email address should receive the notification email when someone fills out the contact form?',
+        name: 'contactUsEmail',
+        value: settings.contactUsEmail,
+        first: true
+    }) }}
+
+    {{ forms.textField({
+        label: 'Leave Review Email',
+        instructions: 'Which email address should receive the notification email when someone leaves a review at the end of the traction app?',
+        name: 'leaveReviewEmail',
+        value: settings.leaveReviewEmail
+    }) }}
+
+    {{ forms.textField({
+        label: 'Email used for demo purposes',
+        instructions: '',
+        name: 'demoEmail',
+        value: settings.demoEmail
+    }) }}
+
+    {{ forms.lightSwitchField({
+        label: "Demo Lightswitch Field",
+        name: 'demoLightSwitch',
+        on: settings.demoLightSwitch
+    }) }}

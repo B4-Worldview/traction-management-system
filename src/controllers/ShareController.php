@@ -79,7 +79,13 @@ class ShareController extends Controller
         $submission->message = $request->getBodyParam("message");
 
         if ($submission->validate()) {
-            $success = $this->sendEmail($submission);
+
+            $body = "
+                {$submission->name} wanted to share the Traction Adventure App with you, and they shared the following
+                message with you:<br><br>
+                {$submission->message}
+            ";
+            //$success = $this->se
             $variables['errors'] = false;
         } else {
             $variables['submission'] = $submission;
@@ -101,7 +107,7 @@ class ShareController extends Controller
     }
 
 
-    private function sendEmail(ShareEmailModel $submission = null, ShareReviewModel $review = null): bool
+    private function sendEssmail(ShareEmailModel $submission = null, ShareReviewModel $review = null): bool
     {
 
         if ($submission != null) {
