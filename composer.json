@@ -2,7 +2,7 @@
   "name": "b4-worldview/traction-management-system",
   "description": "A Custom CraftCMS Plugin for the Traction App",
   "type": "craft-plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "keywords": [
     "CraftCMS",
     "Traction App"

@@ -4,7 +4,7 @@ namespace b4worldview\tractionms\controllers;
 
 use b4worldview\tractionms\models\SettingsModel;
 use b4worldview\tractionms\models\ShareEmailModel;
-use b4worldview\tractionms\models\ShareReviewModel;
+use b4worldview\tractionms\records\ReviewRecord;
 use b4worldview\tractionms\TractionMS;
 use Craft;
 use craft\web\Controller;
@@ -17,6 +17,12 @@ class ShareController extends Controller
 
     /**
      * @inheritdoc
+     *
+     * This can also take an array of strings for the actions that are allowed
+     * to be anonymous:
+     *
+     * public $allowAnoymous = ['index']
+     *
      */
     public $allowAnonymous = true;
 
@@ -31,7 +37,6 @@ class ShareController extends Controller
             $variables,
             View::TEMPLATE_MODE_SITE
         );
-
     }
 
     /**
@@ -47,7 +52,7 @@ class ShareController extends Controller
         /** @var SettingsModel $settings */
         $settings = TractionMS::getInstance()->getSettings();
 
-        $review = new ShareReviewModel();
+        $review = new ReviewRecord();
         $review->overall = $request->getBodyParam("overall");
         $review->favTrophy = $request->getBodyParam("favTrophy");
         $review->suggestions = $request->getBodyParam("suggestions");
@@ -74,7 +79,6 @@ class ShareController extends Controller
 
             $variables["success"] = $success;
             $variables['errors'] = false;
-
         } else {
             $variables["success"] = false;
             $variables["errors"] = true;

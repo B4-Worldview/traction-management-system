@@ -3,10 +3,13 @@
 namespace b4worldview\tractionms;
 
 use b4worldview\tractionms\models\SettingsModel;
+use b4worldview\tractionms\services\RegistrationsService;
+use b4worldview\tractionms\variables\RegistrationsVariable;
 use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
 use Twig\Error\LoaderError;
@@ -15,28 +18,14 @@ use Twig\Error\SyntaxError;
 use yii\base\Event;
 use yii\base\Exception;
 
-/**
- * Custom module class.
- *
- * This class will be available throughout the system via:
- * `Craft::$app->getModule('my-module')`.
- *
- * You can change its module ID ("my-module") to something else from
- * config/app.php.
- *
- * If you want the module to get loaded on every request, uncomment this line
- * in config/app.php:
- *
- *     'bootstrap' => ['my-module']
- *
- * Learn more about Yii module development in Yii's documentation:
- * http://www.yiiframework.com/doc-2.0/guide-structure-modules.html
- */
+
 class TractionMS extends Plugin
 {
-
-    public static $plugin;
-
+    // Static
+    /**
+     * @var Plugin
+     */
+    public static Plugin $plugin;
 
     /**
      * @var bool
@@ -57,19 +46,46 @@ class TractionMS extends Plugin
     {
         parent::init();
 
-        // Set the controllerNamespace based on whether this is a console or web request
+        self::$plugin = $this;
+
+        $this->setComponents([
+            'registrations' => RegistrationsService::class
+        ]);
+
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            static function(Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('registrations', RegistrationsVariable::class);
+            }
+        );
+
+        /**
+         * This is already being taken care of in Craft's base plugin file.
+         */
+        /*
         if (Craft::$app->getRequest()->getIsConsoleRequest()) {
             $this->controllerNamespace = 'modules\\console\\controllers';
         } else {
             $this->controllerNamespace = 'b4worldview\\tractionms\\controllers';
         }
+        */
 
-        // Custom initialization code goes here...
-
+        /**
+         * Figure out why we can use actions instead of a route.
+         * In Twig: {{ actionUrl('plugin-name/controller/action')
+         *
+         * In Ben Croker's Tutorial on CraftQuest
+         *https://craftquest.io/courses/in-depth-on-craft-plugin-development/8578
+         * Time Stamp 2:25
+         *
+         */
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules["tractionms/user/register"] = ['template' => 'tractionms/user/user_registration.twig'];
                 $event->rules["tractionms/user/register-success"] = ['template' => 'tractionms/user/user_registration_successful.twig'];
                 $event->rules["tractionms/user/login"] = ['template' => 'tractionms/user/user_login.twig'];
@@ -86,10 +102,30 @@ class TractionMS extends Plugin
         Event::on(
             View::class,
             View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
-            function (RegisterTemplateRootsEvent $event) {
+            function(RegisterTemplateRootsEvent $event) {
                 $event->roots['tractionms'] = __DIR__ . '/templates';
             }
         );
+        /*
+         *
+         * From: https://craftquest.io/courses/my-first-craft-cms-module/31216
+         *
+         Craft::setAlias('@cqcontrolpanel', __DIR__);
+			parent::init();
+
+			Event::on(
+				Cp::class,
+				Cp::EVENT_REGISTER_CP_NAV_ITEMS,
+				function(RegisterCpNavItemsEvent $event) {
+					$event->navItems[] = [
+						'url' => 'entries/podcast',
+						'label' => 'Podcast Episodes',
+						'icon' => '@cqcontrolpanel/web/img/microphone.svg'
+					];
+				}
+			);
+         *
+         */
     } // init
 
     /**

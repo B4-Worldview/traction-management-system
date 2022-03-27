@@ -25,6 +25,27 @@ class Install extends Migration
     }
 
     /**
+     * Creates the tables needed for the Records used by the plugin
+     *
+     * @return boolean
+     */
+    protected function createTables(): bool
+    {
+        if (!$this->db->tableExists('{{%tractionms_appreviews}}')) {
+            $this->createTable('{{%tractionms_appreviews}}', [
+                'id' => $this->primaryKey(),
+                'overall' => $this->text(),
+                'favTrophy' => $this->text(),
+                'suggestions' => $this->text(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+            ]);
+        }
+        return true;
+    }
+
+    /**
      * @return boolean
      * @throws Throwable
      */
@@ -38,28 +59,6 @@ class Install extends Migration
         return true;
     }
 
-
-    /**
-     * Creates the tables needed for the Records used by the plugin
-     *
-     * @return boolean
-     */
-    protected function createTables(): bool
-    {
-        if (!$this->db->tableExists('{{%tractionms_appreviews}}')) {
-            $this->createTable('{{%tractionms_appreviews}}', [
-                'id' => $this->primaryKey(),
-                'overall' => $this->text(),
-                'favTrophy' => $this->text(),
-                'suggestions' => $this->text(),
-                'dateCreated' => $this->timestamp()->defaultExpression("CURRENT_TIMESTAMP"),
-                'dateUpdated' => $this->timestamp()->defaultExpression("CURRENT_TIMESTAMP"),
-                'uid' => $this->text(),
-            ]);
-        }
-        return true;
-    }
-
     /**
      * Delete tables
      *
@@ -70,7 +69,6 @@ class Install extends Migration
         // Drop tables with foreign keys first
         $this->dropTableIfExists('{{%tractionms_appreviews}}');
     }
-
 
 
 }
