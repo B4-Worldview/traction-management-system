@@ -29,6 +29,7 @@ class ShareController extends Controller
 
     public function actionIndex(): Response
     {
+        
         $variables = [];
         $variables['errors'] = false;
 
