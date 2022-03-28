@@ -22,15 +22,6 @@ class ReviewRecord extends ActiveRecord
     {
         return '{{%tractionms_appreviews}}';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['overall', 'favTrophy', 'suggestions'], 'required'],
-        ];
-    }
+    
 
 }

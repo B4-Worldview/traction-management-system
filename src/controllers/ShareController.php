@@ -29,7 +29,7 @@ class ShareController extends Controller
 
     public function actionIndex(): Response
     {
-        
+
         $variables = [];
         $variables['errors'] = false;
 
@@ -82,7 +82,7 @@ class ShareController extends Controller
             $variables['errors'] = false;
         } else {
             $variables["success"] = false;
-            $variables["errors"] = true;
+            $variables["errors"] = $review->errors;
             $variables["review"] = $review;
         }
 
