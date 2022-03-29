@@ -12,4 +12,5 @@ class RegistrationsVariable extends Component
      * See: https://craftquest.io/courses/in-depth-on-craft-plugin-development/8201
      */
 
+
 }

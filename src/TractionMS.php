@@ -5,7 +5,7 @@ namespace b4worldview\tractionms;
 use b4worldview\tractionms\elements\RegistrationElement;
 use b4worldview\tractionms\models\SettingsModel;
 use b4worldview\tractionms\services\RegistrationsService;
-use b4worldview\tractionms\variables\RegistrationsVariable;
+use b4worldview\tractionms\variables\TractionMsVariable;
 use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
@@ -136,7 +136,7 @@ class TractionMS extends Plugin
             static function(Event $event) {
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
-                $variable->set('registrations', RegistrationsVariable::class);
+                $variable->set('tractionms', TractionMsVariable::class);
             }
         );
     } // _registerElements function
@@ -198,7 +198,7 @@ class TractionMS extends Plugin
             'settings' => $this->getSettings()
         ]);
     }
-    
+
 
     /**
      * @return void
