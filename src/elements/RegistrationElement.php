@@ -2,6 +2,9 @@
 
 namespace b4worldview\tractionms\elements;
 
+use b4worldview\tractionms\elements\db\RegistrationElementQuery;
+use craft\elements\db\ElementQueryInterface;
+
 class RegistrationElement extends \craft\base\Element
 {
     /**
@@ -10,6 +13,15 @@ class RegistrationElement extends \craft\base\Element
     public static function displayName(): string
     {
         return 'Registration';
+    }
+
+
+    /**
+     * @return ElementQueryInterface
+     */
+    public static function find(): ElementQueryInterface
+    {
+        return new RegistrationElementQuery(static::class);
     }
 
     /**
@@ -24,8 +36,6 @@ class RegistrationElement extends \craft\base\Element
      * @var int
      */
     public int $group = 0;
-
-
     /**
      * @var int
      */
@@ -38,7 +48,6 @@ class RegistrationElement extends \craft\base\Element
 
 
     public string $registrationType = "";
-
 
     /**
      * Hooks into the CraftCMS process after this element is saved in the Craft
