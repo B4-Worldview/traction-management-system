@@ -4,6 +4,7 @@ namespace b4worldview\tractionms\migrations;
 
 use Craft;
 use craft\db\Migration;
+use Throwable;
 
 class Install extends Migration
 {
@@ -15,7 +16,7 @@ class Install extends Migration
     {
         if ($this->createTables()) {
             // $this->createIndexes();
-            // $this->addForeignKeys();
+            $this->addForeignKeys();
 
             // Refresh the db schema caches
             Craft::$app->db->schema->refresh();
@@ -61,13 +62,32 @@ class Install extends Migration
                 'dateUpdated' => $this->dateTime()->notNull(),
                 'uid' => $this->uid(),
             ]);
+        }
 
-            // Refresh the db schema caches
-            Craft::$app->db->schema->refresh();
+        if (!$this->db->tableExists('{{%tractionms_registrations}}')) {
+            // create the products table
+            $this->createTable('{{%tractionms_registrations}}', [
+                'id' => $this->integer()->notNull(),
+                'group' => $this->integer(),
+                'profile' => $this->char(3),
+                'registrationType' => $this->char(24),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+                'PRIMARY KEY(id)',
+            ]);
         }
 
 
         return true;
+    }
+
+    protected function addForeignKeys(): void
+    {
+        // give it a foreign key to the elements table
+        $this->addForeignKey(
+            $this->db->getForeignKeyName('{{%tractionms_registrations}}', 'id'),
+            '{{%tractionms_registrations}}', 'id', '{{%elements}}', 'id');
     }
 
     /**
@@ -89,10 +109,11 @@ class Install extends Migration
      *
      * @return void
      */
-    protected function deleteTables()
+    protected function deleteTables(): void
     {
-        // Drop tables with foreign keys first
+
         $this->dropTableIfExists('{{%tractionms_appreviews}}');
+        $this->dropTableIfExists('{{%tractionms_registrations}}');
     }
 
 

@@ -2,13 +2,16 @@
 
 namespace b4worldview\tractionms;
 
+use b4worldview\tractionms\elements\RegistrationElement;
 use b4worldview\tractionms\models\SettingsModel;
 use b4worldview\tractionms\services\RegistrationsService;
 use b4worldview\tractionms\variables\RegistrationsVariable;
 use Craft;
 use craft\base\Plugin;
+use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\services\Elements;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
@@ -45,34 +48,24 @@ class TractionMS extends Plugin
     public function init()
     {
         parent::init();
-
         self::$plugin = $this;
 
-        $this->setComponents([
-            'registrations' => RegistrationsService::class
-        ]);
+        $this->_registerRoutes();
+        $this->_registerElements();
+        $this->_registerServices();
+        $this->_registerVariables();
+        $this->_registerTemplates();
+        // $this->_registerCpNavItems();
 
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            static function(Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('registrations', RegistrationsVariable::class);
-            }
-        );
+    } // init
 
-        /**
-         * This is already being taken care of in Craft's base plugin file.
-         */
-        /*
-        if (Craft::$app->getRequest()->getIsConsoleRequest()) {
-            $this->controllerNamespace = 'modules\\console\\controllers';
-        } else {
-            $this->controllerNamespace = 'b4worldview\\tractionms\\controllers';
-        }
-        */
-
+    /**
+     * Registers the routes for the TractionMS plugin
+     *
+     * @return void
+     */
+    private function _registerRoutes(): void
+    {
         /**
          * Figure out why we can use actions instead of a route.
          * In Twig: {{ actionUrl('plugin-name/controller/action')
@@ -98,7 +91,64 @@ class TractionMS extends Plugin
                 $event->rules["tractionms/share/review"] = 'tractionms/share/review';
             }
         );
+    }
 
+
+    /**
+     * Registers the elements used with the TractionMS plugin
+     *
+     * @return void
+     */
+    private function _registerElements(): void
+    {
+        Event::on(Elements::class,
+            Elements::EVENT_REGISTER_ELEMENT_TYPES,
+            static function(RegisterComponentTypesEvent $event) {
+                $event->types[] = RegistrationElement::class;
+            }
+        );
+    }
+
+
+    /**
+     * Registers the services used with the TractionMS plugin
+     *
+     * @return void
+     */
+    private function _registerServices(): void
+    {
+        $this->setComponents([
+            'registrations' => RegistrationsService::class
+        ]);
+    }
+
+
+    /**
+     * Registers the variables used in the TractionMS plugin
+     *
+     * @return void
+     */
+    private function _registerVariables(): void
+    {
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            static function(Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('registrations', RegistrationsVariable::class);
+            }
+        );
+    } // _registerElements function
+
+
+    /**
+     * Registers the templates for the TractionMS plugin
+     *
+     * @return void
+     */
+    private function _registerTemplates(): void
+    {
         Event::on(
             View::class,
             View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
@@ -106,27 +156,8 @@ class TractionMS extends Plugin
                 $event->roots['tractionms'] = __DIR__ . '/templates';
             }
         );
-        /*
-         *
-         * From: https://craftquest.io/courses/my-first-craft-cms-module/31216
-         *
-         Craft::setAlias('@cqcontrolpanel', __DIR__);
-			parent::init();
+    }
 
-			Event::on(
-				Cp::class,
-				Cp::EVENT_REGISTER_CP_NAV_ITEMS,
-				function(RegisterCpNavItemsEvent $event) {
-					$event->navItems[] = [
-						'url' => 'entries/podcast',
-						'label' => 'Podcast Episodes',
-						'icon' => '@cqcontrolpanel/web/img/microphone.svg'
-					];
-				}
-			);
-         *
-         */
-    } // init
 
     /**
      * @param $to
@@ -144,6 +175,7 @@ class TractionMS extends Plugin
             ->setHtmlBody($body)
             ->send();
     }
+
 
     /**
      * @return SettingsModel
@@ -165,5 +197,33 @@ class TractionMS extends Plugin
         return Craft::$app->getView()->renderTemplate('tractionms/_cp/settings', [
             'settings' => $this->getSettings()
         ]);
+    }
+    
+
+    /**
+     * @return void
+     */
+    private function _registerCpNavItems(): void
+    {
+        /*
+         *
+         * From: https://craftquest.io/courses/my-first-craft-cms-module/31216
+         *
+         Craft::setAlias('@cqcontrolpanel', __DIR__);
+			parent::init();
+
+			Event::on(
+				Cp::class,
+				Cp::EVENT_REGISTER_CP_NAV_ITEMS,
+				function(RegisterCpNavItemsEvent $event) {
+					$event->navItems[] = [
+						'url' => 'entries/podcast',
+						'label' => 'Podcast Episodes',
+						'icon' => '@cqcontrolpanel/web/img/microphone.svg'
+					];
+				}
+			);
+         *
+         */
     }
 }
