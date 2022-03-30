@@ -44,10 +44,10 @@ class Install extends Migration
          * Yii Docs:
          * https://www.yiiframework.com/doc/api/2.0/yii-db-migration#createIndex()-detail
          *
-         *  Also, $this->>addForiegnKey
+         *  Also, $this->>addForeignKey
          * If the delete property is set to cascade, If the record the key
          *  points to is deleted, so will the row that has
-         * the foriegn key if the "cascade" is enabled
+         * the foreign key if the "cascade" is enabled
          *
          *
          */
@@ -67,27 +67,52 @@ class Install extends Migration
         if (!$this->db->tableExists('{{%tractionms_registrations}}')) {
             // create the products table
             $this->createTable('{{%tractionms_registrations}}', [
-                'id' => $this->integer()->notNull(),
+                'id' => $this->primaryKey(),
                 'group' => $this->integer(),
-                'profile' => $this->char(3),
+                'profileId' => $this->integer(),
                 'registrationType' => $this->char(24),
+                'availableTimes' => $this->text(),
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),
                 'uid' => $this->uid(),
-                'PRIMARY KEY(id)',
             ]);
         }
 
+        if (!$this->db->tableExists('{{%tractionms_profiles}}')) {
+            $this->createTable('{{%tractionms_profiles}}', [
+                'id' => $this->primaryKey(),
+                'firstName' => $this->char(255),
+                'lastName' => $this->char(255),
+                'age' => $this->integer(),
+                'professingChristian' => $this->char(24),
+                'timezone' => $this->char(24),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+            ]);
+        }
 
         return true;
     }
 
     protected function addForeignKeys(): void
     {
-        // give it a foreign key to the elements table
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%tractionms_registrations}}', 'id'),
-            '{{%tractionms_registrations}}', 'id', '{{%elements}}', 'id');
+            null,
+            '{{%tractionms_registrations}}',
+            'id',
+            '{{%elements}}',
+            'id'
+        );
+
+        $this->addForeignKey(
+            null,
+            '{{%tractionms_registrations}}',
+            'profileId',
+            '{{%tractionms_profiles}}',
+            'id'
+        );
+
     }
 
     /**
@@ -111,9 +136,14 @@ class Install extends Migration
      */
     protected function deleteTables(): void
     {
-
         $this->dropTableIfExists('{{%tractionms_appreviews}}');
         $this->dropTableIfExists('{{%tractionms_registrations}}');
+        $this->dropTableIfExists('{{%tractionms_profiles}}');
+    }
+
+    protected function createIndexes(): void
+    {
+
     }
 
 

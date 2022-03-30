@@ -4,19 +4,12 @@ namespace b4worldview\tractionms\elements\db;
 
 class RegistrationElementQuery extends \craft\elements\db\ElementQuery
 {
-    public int $group;
-    public int $profile;
-    public string $registrationType;
+    public int $profileId = 0;
+    public string $registrationType = "";
 
-    public function group($value): RegistrationElementQuery
+    public function profileId($value): RegistrationElementQuery
     {
-        $this->group = $value;
-        return $this;
-    }
-
-    public function profile($value): RegistrationElementQuery
-    {
-        $this->profile = $value;
+        $this->profileId = $value;
         return $this;
     }
 
@@ -34,17 +27,12 @@ class RegistrationElementQuery extends \craft\elements\db\ElementQuery
 
         // select the price and currency columns
         $this->query->select([
-            'tractionms_registrations.group',
-            'tractionms_registrations.profile',
+            'tractionms_registrations.profileId',
             'tractionms_registrations.registrationType'
         ]);
 
-        if ($this->group) {
-            $this->subQuery->andWhere(Db::parseParam('tractionms_registrations.group', $this->group));
-        }
-
-        if ($this->profile) {
-            $this->subQuery->andWhere(Db::parseParam('tractionms_registrations.profile', $this->profile));
+        if ($this->profileId) {
+            $this->subQuery->andWhere(Db::parseParam('tractionms_registrations.profileId', $this->profileId));
         }
 
         if ($this->registrationType) {

@@ -3,9 +3,23 @@
 namespace b4worldview\tractionms\elements;
 
 use b4worldview\tractionms\elements\db\RegistrationElementQuery;
+use craft\elements\db\ElementQueryInterface;
 
 class RegistrationElement extends \craft\base\Element
 {
+    /**
+     * @var int
+     */
+    public int $group = 0;
+    /**
+     * @var int
+     */
+    public int $profileId = 0;
+    /**
+     * @var string
+     */
+    public string $registrationType = "";
+
     /**
      * @inheritdoc
      */
@@ -14,15 +28,13 @@ class RegistrationElement extends \craft\base\Element
         return 'Registration';
     }
 
-
     /**
      * @return RegistrationElementQuery
      */
-    public static function find(): RegistrationElementQuery
+    public static function find(): ElementQueryInterface
     {
         return new RegistrationElementQuery(static::class);
     }
-
 
     /**
      * @inheritDoc
@@ -55,38 +67,27 @@ class RegistrationElement extends \craft\base\Element
     }
 
     /**
-     * @var int
+     * @return array
      */
-    public int $group = 0;
-    /**
-     * @var int
-     */
-
-
-    public int $profile = 0;
-    /**
-     * @var string
-     */
-
-
-    public string $registrationType = "";
-
-    /**
-     * @inheritDoc
-     * @return string
-     */
-    public function getStatus()
+    protected static function defineTableAttributes(): array
     {
-        if ($this->groupIsTrue) {
-            return 'group';
-        }
-
-        if ($this->finishedIsTrue) {
-            return 'finished';
-        }
-
-        return 'waiting';
+        return [
+            'registrationType' => \Craft::t('tractionms', 'Type'),
+            'profileId' => \Craft::t('tractionms', 'Name'),
+        ];
     }
+
+    protected static function defineSources(string $context = null): array
+    {
+        return [
+            [
+                'key' => '*',
+                'label' => 'All Registrations',
+                'criteria' => []
+            ],
+        ];
+    }
+
 
     /**
      * Hooks into the CraftCMS process after this element is saved in the Craft
@@ -102,14 +103,14 @@ class RegistrationElement extends \craft\base\Element
             \Craft::$app->db->createCommand()
                 ->insert('{{%tractionms_registrations}}', [
                     'id' => $this->id,
-                    'profile' => $this->profile,
+                    'profileId' => $this->profileId,
                     'registrationType' => $this->registrationType
                 ])
                 ->execute();
         } else {
             \Craft::$app->db->createCommand()
                 ->update('{{%tractionms_registrations}}', [
-                    'profile' => $this->profile,
+                    'profileId' => $this->profileId,
                     'registrationType' => $this->registrationType
                 ], ['id' => $this->id])
                 ->execute();
@@ -136,4 +137,5 @@ class RegistrationElement extends \craft\base\Element
                 return parent::statusCondition($status);
         }
     }
+
 }

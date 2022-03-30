@@ -78,7 +78,7 @@ class TractionMS extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function(RegisterUrlRulesEvent $event) {
+            function (RegisterUrlRulesEvent $event) {
                 $event->rules["tractionms/user/register"] = ['template' => 'tractionms/user/user_registration.twig'];
                 $event->rules["tractionms/user/register-success"] = ['template' => 'tractionms/user/user_registration_successful.twig'];
                 $event->rules["tractionms/user/login"] = ['template' => 'tractionms/user/user_login.twig'];
@@ -89,6 +89,8 @@ class TractionMS extends Plugin
                 $event->rules["tractionms/share/"] = 'tractionms/share/index';
                 $event->rules["tractionms/share/by-email"] = 'tractionms/share/by-email';
                 $event->rules["tractionms/share/review"] = 'tractionms/share/review';
+                $event->rules["tractionms/register/for-discipleship-group"] = 'tractionms/register/for-discipleship-group';
+                $event->rules["tractionms/register/thank-you"] = ['template' => 'tractionms/_registrations/thankYou.twig'];
             }
         );
     }
@@ -103,7 +105,7 @@ class TractionMS extends Plugin
     {
         Event::on(Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
-            static function(RegisterComponentTypesEvent $event) {
+            static function (RegisterComponentTypesEvent $event) {
                 $event->types[] = RegistrationElement::class;
             }
         );
@@ -133,7 +135,7 @@ class TractionMS extends Plugin
         Event::on(
             CraftVariable::class,
             CraftVariable::EVENT_INIT,
-            static function(Event $event) {
+            static function (Event $event) {
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
                 $variable->set('tractionms', TractionMsVariable::class);
@@ -152,7 +154,7 @@ class TractionMS extends Plugin
         Event::on(
             View::class,
             View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
-            function(RegisterTemplateRootsEvent $event) {
+            function (RegisterTemplateRootsEvent $event) {
                 $event->roots['tractionms'] = __DIR__ . '/templates';
             }
         );
@@ -205,25 +207,6 @@ class TractionMS extends Plugin
      */
     private function _registerCpNavItems(): void
     {
-        /*
-         *
-         * From: https://craftquest.io/courses/my-first-craft-cms-module/31216
-         *
-         Craft::setAlias('@cqcontrolpanel', __DIR__);
-			parent::init();
 
-			Event::on(
-				Cp::class,
-				Cp::EVENT_REGISTER_CP_NAV_ITEMS,
-				function(RegisterCpNavItemsEvent $event) {
-					$event->navItems[] = [
-						'url' => 'entries/podcast',
-						'label' => 'Podcast Episodes',
-						'icon' => '@cqcontrolpanel/web/img/microphone.svg'
-					];
-				}
-			);
-         *
-         */
     }
 }
