@@ -3,7 +3,6 @@
 namespace b4worldview\tractionms\elements;
 
 use b4worldview\tractionms\elements\db\RegistrationElementQuery;
-use craft\elements\db\ElementQueryInterface;
 
 class RegistrationElement extends \craft\base\Element
 {
@@ -17,11 +16,21 @@ class RegistrationElement extends \craft\base\Element
 
 
     /**
-     * @return ElementQueryInterface
+     * @return RegistrationElementQuery
      */
-    public static function find(): ElementQueryInterface
+    public static function find(): RegistrationElementQuery
     {
         return new RegistrationElementQuery(static::class);
+    }
+
+
+    /**
+     * @inheritDoc
+     * @return bool
+     */
+    public static function hasStatuses(): bool
+    {
+        return true;
     }
 
     /**
@@ -30,6 +39,19 @@ class RegistrationElement extends \craft\base\Element
     public static function pluralDisplayName(): string
     {
         return 'Registrations';
+    }
+
+    /**
+     * @inerhitDoc
+     * @return array[]
+     */
+    public static function statuses(): array
+    {
+        return [
+            'waiting' => ['label' => \Craft::t('tractionms', 'Waiting Assignment'), 'color' => 'ff932c'],
+            'group' => ['label' => \Craft::t('tractionms', 'Group'), 'color' => '46ac4e'],
+            'finished' => ['label' => \Craft::t('tractionms', 'Finished'), 'color' => 'ac0100'],
+        ];
     }
 
     /**
@@ -48,6 +70,23 @@ class RegistrationElement extends \craft\base\Element
 
 
     public string $registrationType = "";
+
+    /**
+     * @inheritDoc
+     * @return string
+     */
+    public function getStatus()
+    {
+        if ($this->groupIsTrue) {
+            return 'group';
+        }
+
+        if ($this->finishedIsTrue) {
+            return 'finished';
+        }
+
+        return 'waiting';
+    }
 
     /**
      * Hooks into the CraftCMS process after this element is saved in the Craft
@@ -77,5 +116,24 @@ class RegistrationElement extends \craft\base\Element
         }
 
         parent::afterSave($isNew);
+    }
+
+    /**
+     * @param string $status
+     * @return bool[]
+     */
+    protected function statusCondition(string $status)
+    {
+        switch ($status) {
+            case 'waiting':
+                return ['waiting' => true];
+            case 'group':
+                return ['group' => true];
+            case 'finished':
+                return ['finished' => true];
+            default:
+                // call the base method for `enabled` or `disabled`
+                return parent::statusCondition($status);
+        }
     }
 }
