@@ -8,33 +8,6 @@ use craft\elements\db\ElementQueryInterface;
 class ProfileElement extends \craft\base\Element
 {
     /**
-     * @inheritdoc
-     */
-    public static function displayName(): string
-    {
-        return 'Profile';
-    }
-
-
-    /**
-     * @return ElementQueryInterface
-     */
-    public static function find(): ElementQueryInterface
-    {
-        return new ProfileElementQuery(static::class);
-    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public static function pluralDisplayName(): string
-    {
-        return 'Profiles';
-    }
-
-
-    /**
      * @var int
      */
     public int $age = 0;
@@ -65,39 +38,35 @@ class ProfileElement extends \craft\base\Element
 
 
     /**
-     * Hooks into the CraftCMS process after this element is saved in the Craft
-     * elements table, this code is executed.
-     *
-     * @param bool $isNew
-     * @return void
-     * @throws \yii\db\Exception
+     * @var string
      */
-    public function afterSave(bool $isNew): void
-    {
-        if ($isNew) {
-            \Craft::$app->db->createCommand()
-                ->insert('{{%tractionms_profiles}}', [
-                    'id' => $this->id,
-                    'firstName' => $this->firstName,
-                    'lastName' => $this->lastName,
-                    'age' => $this->age,
-                    'professingChristian' => $this->professingChristian,
-                    'timezone' => $this->timezone,
-                ])
-                ->execute();
-        } else {
-            \Craft::$app->db->createCommand()
-                ->update('{{%tractionms_registrations}}', [
-                    'firstName' => $this->firstName,
-                    'lastName' => $this->lastName,
-                    'age' => $this->age,
-                    'professingChristian' => $this->professingChristian,
-                    'timezone' => $this->timezone,
-                ], ['id' => $this->id])
-                ->execute();
-        }
+    public string $email = "";
 
-        parent::afterSave($isNew);
+
+    /**
+     * @inheritdoc
+     */
+    public static function displayName(): string
+    {
+        return 'Profile';
+    }
+
+
+    /**
+     * @return ElementQueryInterface
+     */
+    public static function find(): ElementQueryInterface
+    {
+        return new ProfileElementQuery(static::class);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public static function pluralDisplayName(): string
+    {
+        return 'Profiles';
     }
 
 
@@ -122,6 +91,45 @@ class ProfileElement extends \craft\base\Element
                 'criteria' => []
             ],
         ];
+    }
+
+
+    /**
+     * Hooks into the CraftCMS process after this element is saved in the Craft
+     * elements table, this code is executed.
+     *
+     * @param bool $isNew
+     * @return void
+     * @throws \yii\db\Exception
+     */
+    public function afterSave(bool $isNew): void
+    {
+        if ($isNew) {
+            \Craft::$app->db->createCommand()
+                ->insert('{{%tractionms_profiles}}', [
+                    'id' => $this->id,
+                    'firstName' => $this->firstName,
+                    'lastName' => $this->lastName,
+                    'email' => $this->email,
+                    'age' => $this->age,
+                    'professingChristian' => $this->professingChristian,
+                    'timezone' => $this->timezone,
+                ])
+                ->execute();
+        } else {
+            \Craft::$app->db->createCommand()
+                ->update('{{%tractionms_registrations}}', [
+                    'firstName' => $this->firstName,
+                    'lastName' => $this->lastName,
+                    'email' => $this->email,
+                    'age' => $this->age,
+                    'professingChristian' => $this->professingChristian,
+                    'timezone' => $this->timezone,
+                ], ['id' => $this->id])
+                ->execute();
+        }
+
+        parent::afterSave($isNew);
     }
 
 }

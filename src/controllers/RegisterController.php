@@ -14,10 +14,36 @@ use yii\web\BadRequestHttpException;
 
 class RegisterController extends Controller
 {
+    private static array $timeSlots = [
+        "Monday_Morning" => "",
+        "Monday_Afternoon" => "",
+        "Monday_Evening" => "",
+        "Tuesday_Morning" => "",
+        "Tuesday_Afternoon" => "",
+        "Tuesday_Evening" => "",
+        "Wednesday_Morning" => "",
+        "Wednesday_Afternoon" => "",
+        "Wednesday_Evening" => "",
+        "Thursday_Morning" => "",
+        "Thursday_Afternoon" => "",
+        "Thursday_Evening" => "",
+        "Friday_Morning" => "",
+        "Friday_Afternoon" => "",
+        "Friday_Evening" => "",
+        "Saturday_Morning" => "",
+        "Saturday_Afternoon" => "",
+        "Saturday_Evening" => "",
+        "Sunday_Afternoon" => "",
+    ];
+
+
     /**
      * @var bool
      */
     public $allowAnonymous = true;
+
+
+    private $timeSlotsText = "";
 
 
     /**
@@ -35,6 +61,17 @@ class RegisterController extends Controller
         $submission = new RegistrationSubmissionModel();
         $submission->attributes = $request->getBodyParams();
 
+        $preppedSlots = [];
+        foreach (static::$timeSlots as $key => $slot) {
+            $value = $request->getBodyParam($key);
+            $preppedSlots[][$key] = $value != null ? 'Y' : 'N';
+
+            if ($value != null) {
+                $this->timeSlotsText .= str_replace("_", " ", $key) . "<br>";
+            }
+        }
+        $submission->availableTimes = json_encode($preppedSlots);
+
         if (!$submission->validate()) {
             static::setCraftFlashError($submission);
             return null;
@@ -43,6 +80,7 @@ class RegisterController extends Controller
         $profile = new ProfileElement();
         $profile->firstName = $submission->firstName;
         $profile->lastName = $submission->lastName;
+        $profile->email = $submission->email;
         $profile->age = $submission->age;
         $profile->professingChristian = $submission->professingChristian;
         $profile->timezone = $submission->timezone;
@@ -56,6 +94,7 @@ class RegisterController extends Controller
         $registration = new RegistrationElement();
         $registration->profileId = $profile->id;
         $registration->registrationType = 'DG';
+        $registration->availableTimes = $submission->availableTimes;
         $registrationSuccess = Craft::$app->elements->saveElement($registration);
 
         if (!$registrationSuccess) {
@@ -63,9 +102,23 @@ class RegisterController extends Controller
             return null;
         }
 
-        Craft::$app->getSession()->setNotice(
-            "Thank you for your registration. Someone with contact you ASAP."
+        $environment = getenv('ENVIRONMENT');
+
+        $body = "
+            <b>Name:</b> {$submission->firstName} {$submission->lastName} <br>
+            <b>Age:</b> {$submission->age} <br>
+            <b>Faith Profession:</b> {$submission->professingChristian} <br><br>
+            <b>Timeslots:</b> <br>
+            {$this->timeSlotsText} <br>
+            <b>Timezone:</b> {$submission->timezone} <br>
+            <b>Email:</b> {$submission->email}
+        ";
+        TractionMS::getInstance()->sendEmail(
+            $environment == 'dev' ? $settings->demoEmail : $settings->leaveReviewEmail,
+            "REGISTRATION Discipleship Group",
+            $body
         );
+
         $this->redirectToPostedUrl($submission);
     }
 

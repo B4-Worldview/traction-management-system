@@ -8,6 +8,7 @@ use craft\db\ActiveRecord;
  * @property int $id
  * @property string $firstName
  * @property string $lastName
+ * @property string $email
  * @property int $age
  * @property string $professionChristian
  * @property string $timezone
@@ -22,12 +23,14 @@ class ProfileRecord extends ActiveRecord
         return '{{%tractionms_profiles}}';
     }
 
+
     public function rules(): array
     {
         return [
-            [['firstName', 'lastName', 'age'], 'required'],
+            [['firstName', 'lastName', 'age', 'email'], 'required'],
             [['firstName', 'lastName'], 'string'],
-            ['age', 'integer']
+            ['age', 'integer'],
+            [['email'], 'email'],
         ];
     }
 

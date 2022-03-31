@@ -25,6 +25,7 @@ class Install extends Migration
         return true;
     }
 
+
     /**
      * Creates the tables needed for the Records used by the plugin
      *
@@ -83,6 +84,7 @@ class Install extends Migration
                 'id' => $this->primaryKey(),
                 'firstName' => $this->char(255),
                 'lastName' => $this->char(255),
+                'email' => $this->string()->notNull(),
                 'age' => $this->integer(),
                 'professingChristian' => $this->char(24),
                 'timezone' => $this->char(24),
@@ -94,6 +96,7 @@ class Install extends Migration
 
         return true;
     }
+
 
     protected function addForeignKeys(): void
     {
@@ -115,6 +118,7 @@ class Install extends Migration
 
     }
 
+
     /**
      * @return boolean
      * @throws Throwable
@@ -129,6 +133,7 @@ class Install extends Migration
         return true;
     }
 
+
     /**
      * Delete tables
      *
@@ -140,6 +145,7 @@ class Install extends Migration
         $this->dropTableIfExists('{{%tractionms_registrations}}');
         $this->dropTableIfExists('{{%tractionms_profiles}}');
     }
+
 
     protected function createIndexes(): void
     {

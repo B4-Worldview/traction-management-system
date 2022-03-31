@@ -8,6 +8,30 @@ use craft\elements\db\ElementQueryInterface;
 class RegistrationElement extends \craft\base\Element
 {
     /**
+     * @var int
+     */
+    public int $group = 0;
+
+
+    /**
+     * @var int
+     */
+    public int $profileId = 0;
+
+
+    /**
+     * @var string
+     */
+    public string $registrationType = "";
+
+
+    /**
+     * @var string
+     */
+    public string $availableTimes = "";
+
+
+    /**
      * @inheritdoc
      */
     public static function displayName(): string
@@ -59,21 +83,27 @@ class RegistrationElement extends \craft\base\Element
 
 
     /**
-     * @var int
+     * @return array
      */
-    public int $group = 0;
+    protected static function defineTableAttributes(): array
+    {
+        return [
+            'registrationType' => \Craft::t('tractionms', 'Type'),
+            'profileId' => \Craft::t('tractionms', 'Name'),
+        ];
+    }
 
 
-    /**
-     * @var int
-     */
-    public int $profileId = 0;
-
-
-    /**
-     * @var string
-     */
-    public string $registrationType = "";
+    protected static function defineSources(string $context = null): array
+    {
+        return [
+            [
+                'key' => '*',
+                'label' => 'All Registrations',
+                'criteria' => []
+            ],
+        ];
+    }
 
 
     /**
@@ -91,14 +121,16 @@ class RegistrationElement extends \craft\base\Element
                 ->insert('{{%tractionms_registrations}}', [
                     'id' => $this->id,
                     'profileId' => $this->profileId,
-                    'registrationType' => $this->registrationType
+                    'registrationType' => $this->registrationType,
+                    'availableTimes' => $this->availableTimes,
                 ])
                 ->execute();
         } else {
             \Craft::$app->db->createCommand()
                 ->update('{{%tractionms_registrations}}', [
                     'profileId' => $this->profileId,
-                    'registrationType' => $this->registrationType
+                    'registrationType' => $this->registrationType,
+                    'availableTimes' => $this->availableTimes,
                 ], ['id' => $this->id])
                 ->execute();
         }
@@ -124,30 +156,6 @@ class RegistrationElement extends \craft\base\Element
                 // call the base method for `enabled` or `disabled`
                 return parent::statusCondition($status);
         }
-    }
-
-
-    /**
-     * @return array
-     */
-    protected static function defineTableAttributes(): array
-    {
-        return [
-            'registrationType' => \Craft::t('tractionms', 'Type'),
-            'profileId' => \Craft::t('tractionms', 'Name'),
-        ];
-    }
-
-
-    protected static function defineSources(string $context = null): array
-    {
-        return [
-            [
-                'key' => '*',
-                'label' => 'All Registrations',
-                'criteria' => []
-            ],
-        ];
     }
 
 }

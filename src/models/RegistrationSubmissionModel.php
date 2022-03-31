@@ -55,7 +55,7 @@ class RegistrationSubmissionModel extends \craft\base\Model
         return [
             [['age', 'firstName', 'lastName', 'email'], 'required'],
             [['age'], 'integer'],
-            [['firstName', 'lastName', 'timezone', 'availableTimes'], 'string'],
+            [['firstName', 'lastName', 'timezone', 'availableTimes', 'professingChristian'], 'string'],
             [['email'], 'email']
         ];
     }
